@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08111f">
+<title>Mohit's Autonomous Job Apply Portal</title>
+<style>
+:root{
+  --bg:#07101d;--panel:#0d1929;--panel2:#111f32;--panel3:#16263c;
+  --text:#f5f8ff;--muted:#91a2ba;--line:#20334d;
+  --primary:#6d63ff;--primary2:#4f46e5;--cyan:#22d3ee;
+  --green:#35d49a;--yellow:#f7c948;--red:#ff6b7a;
+  --shadow:0 18px 55px rgba(0,0,0,.24);--radius:18px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 15% -10%,#172d52 0,#07101d 38%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+.app{min-height:100vh}
+.shell{max-width:1400px;margin:auto;padding:22px}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 10px 30px rgba(109,99,255,.28)}
+.brand h1{font-size:17px;margin:0;letter-spacing:-.2px}
+.brand p{font-size:11px;color:var(--muted);margin:3px 0 0}
+.top-actions{display:flex;align-items:center;gap:9px}
+.status{border:1px solid var(--line);background:rgba(13,25,41,.8);padding:9px 12px;border-radius:999px;color:var(--muted);font-size:12px}
+.status i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:7px}
+.btn{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel);color:var(--text);font-weight:750}
+.btn:hover{filter:brightness(1.12)}
+.btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 10px 25px rgba(79,70,229,.25)}
+.btn.small{padding:8px 10px;font-size:12px}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--red);border-color:rgba(255,107,122,.35)}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:18px}
+.sidebar{position:sticky;top:18px;height:fit-content;background:rgba(13,25,41,.84);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+.nav-title{padding:10px;color:#60748f;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+.nav{display:grid;gap:4px}
+.nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;font-weight:650}
+.nav button.active,.nav button:hover{background:var(--panel3);color:var(--text)}
+.side-note{margin-top:18px;border-top:1px solid var(--line);padding:14px 10px 4px;color:var(--muted);font-size:11px;line-height:1.55}
+.main{min-width:0}
+.hero{display:grid;grid-template-columns:1.45fr .75fr;gap:16px;margin-bottom:16px}
+.hero-card,.panel{background:linear-gradient(145deg,rgba(17,31,50,.95),rgba(10,20,34,.95));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.hero-card{padding:28px}
+.eyebrow{font-size:11px;color:var(--cyan);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.hero h2{font-size:36px;line-height:1.06;letter-spacing:-1.4px;margin:10px 0 12px;max-width:700px}
+.hero p{color:var(--muted);line-height:1.6;max-width:720px;margin:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
+.hero-side{padding:22px}
+.side-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.side-value{font-size:29px;font-weight:900;margin:10px 0 2px}
+.side-sub{font-size:12px;color:var(--muted)}
+.progress{height:7px;background:#091423;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:17px 0 10px}
+.progress span{display:block;height:100%;width:78%;background:linear-gradient(90deg,var(--primary),var(--cyan));border-radius:99px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{padding:17px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.kpi .label{font-size:11px;color:var(--muted)}
+.kpi .value{font-size:27px;font-weight:900;margin-top:6px}
+.kpi .hint{font-size:10px;color:#6f849f;margin-top:4px}
+.content-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.7fr);gap:16px}
+.panel{padding:20px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:15px}
+.panel-head h3{font-size:18px;margin:0}
+.panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}
+.filters{display:grid;grid-template-columns:1.5fr .8fr .8fr auto;gap:8px;margin-bottom:12px}
+.input,.select{width:100%;background:#0a1525;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 11px;outline:none}
+.input:focus,.select:focus{border-color:var(--primary)}
+.jobs{display:grid;gap:9px}
+.job{padding:15px;background:rgba(22,38,60,.65);border:1px solid var(--line);border-radius:14px}
+.job-top{display:flex;justify-content:space-between;gap:12px}
+.job h4{margin:0;font-size:14px;line-height:1.35}
+.company{font-size:12px;color:var(--muted);margin-top:4px}
+.score{flex:0 0 auto;font-weight:900;color:var(--green);font-size:13px}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:10px;color:#aab9ce;background:#0b1727;border:1px solid var(--line);border-radius:999px;padding:4px 7px}
+.desc{font-size:11px;color:#8294ad;line-height:1.5;margin:10px 0 0}
+.job-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:13px}
+.activity{display:grid;gap:12px}
+.activity-row{display:flex;gap:10px;align-items:flex-start}
+.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-top:5px;flex:0 0 auto}
+.activity-row strong{font-size:12px}
+.activity-row div{font-size:11px;color:var(--muted);line-height:1.45}
+.rule-list{display:grid;gap:8px}
+.rule{display:flex;align-items:center;gap:8px;color:#b6c4d6;font-size:11px}
+.rule b{color:var(--green)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field label{display:block;color:#71849e;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin-bottom:5px}
+.field .value{padding:10px 11px;border-radius:10px;background:#0a1525;border:1px solid var(--line);font-size:11px;color:#c8d3e2;min-height:37px}
+.section{margin-top:16px}
+.toast{position:fixed;right:18px;bottom:18px;max-width:330px;padding:12px 14px;border-radius:12px;background:#102039;border:1px solid var(--line);box-shadow:var(--shadow);font-size:12px;display:none;z-index:20}
+.modal{position:fixed;inset:0;background:rgba(2,7,14,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
+.modal-box{width:min(430px,100%);background:#0d1929;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
+.modal-box h3{margin:0 0 7px}.modal-box p{font-size:12px;color:var(--muted);line-height:1.5}
+.footer{text-align:center;color:#62758f;font-size:10px;padding:25px 0}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;align-items:center;gap:8px;overflow:auto}.nav-title,.side-note{display:none}.nav{display:flex}.nav button{white-space:nowrap}.hero{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.shell{padding:13px}.topbar{height:auto}.top-actions .btn{display:none}.brand h1{font-size:14px}.hero-card{padding:21px}.hero h2{font-size:28px}.kpis{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.job-top{align-items:flex-start}.profile-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="shell">
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">M</div>
+    <div><h1>Mohit's Autonomous Job Apply Portal</h1><p>Personal job-search command center</p></div>
+  </div>
+  <div class="top-actions">
+    <span class="status"><i></i><span id="connection">Connecting…</span></span>
+    <button class="btn small" id="tokenBtn">Admin access</button>
+    <button class="btn small" id="logoutBtn">Lock</button>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="nav-title">Workspace</div>
+  <nav class="nav">
+    <button class="active" data-scroll="overview">Overview</button>
+    <button data-scroll="jobsSection">Job matches</button>
+    <button data-scroll="profileSection">Profile</button>
+    <button data-scroll="rulesSection">Guardrails</button>
+  </nav>
+  <div class="side-note">Automatic server scan is configured for every 3 hours. On a free Render instance, inactivity can delay a scheduled request.</div>
+</aside>
+
+<main class="main">
+<section id="overview" class="hero">
+  <div class="hero-card">
+    <div class="eyebrow">Career automation workspace</div>
+    <h2>Find stronger .NET opportunities without repetitive searching.</h2>
+    <p>Discover roles, score them against Mohit's backend profile, remove duplicates and keep the application process supervised. Remote and Hybrid are preferred; office roles are limited to Noida and Gurgaon.</p>
+    <div class="actions">
+      <button class="btn primary" id="scanBtn">Scan jobs now</button>
+      <button class="btn" id="refreshBtn">Refresh dashboard</button>
+    </div>
+    <div id="scanMessage" style="margin-top:12px;color:var(--muted);font-size:11px"></div>
+  </div>
+  <div class="panel hero-side">
+    <div class="side-label">Automation status</div>
+    <div class="side-value" id="automationStatus">Ready</div>
+    <div class="side-sub">Server scan cadence: every 3 hours</div>
+    <div class="progress"><span></span></div>
+    <div class="side-sub" id="lastScan">Last scan: —</div>
+  </div>
+</section>
+
+<section class="kpis">
+  <div class="kpi"><div class="label">Matching jobs</div><div class="value" id="matches">0</div><div class="hint">score ≥ 55</div></div>
+  <div class="kpi"><div class="label">Shortlisted</div><div class="value" id="shortlist">0</div><div class="hint">ready for review</div></div>
+  <div class="kpi"><div class="label">Applications</div><div class="value" id="applied">0</div><div class="hint">tracked in portal</div></div>
+  <div class="kpi"><div class="label">Interviews</div><div class="value" id="interviews">0</div><div class="hint">pipeline status</div></div>
+</section>
+
+<div class="content-grid">
+<section id="jobsSection" class="panel">
+  <div class="panel-head">
+    <div><h3>Top matching jobs</h3><p>Live results from the connected job scanner.</p></div>
+    <span class="status" id="jobCount">0 jobs</span>
+  </div>
+  <div class="filters">
+    <input class="input search" id="search" placeholder="Search title, company or technology">
+    <select class="select" id="workFilter"><option value="all">All locations</option><option value="remote">Remote</option><option value="noida">Noida</option><option value="gurgaon">Gurgaon</option></select>
+    <select class="select" id="scoreFilter"><option value="0">Any score</option><option value="70">70+ score</option><option value="80">80+ score</option><option value="90">90+ score</option></select>
+    <button class="btn small" id="clearFilters">Clear</button>
+  </div>
+  <div id="jobs" class="jobs"><div class="empty">No jobs loaded yet. Tap <b>Scan jobs now</b>.</div></div>
+</section>
+
+<aside>
+<section class="panel">
+  <div class="panel-head"><div><h3>Activity</h3><p>Latest portal events</p></div></div>
+  <div id="activity" class="activity">
+    <div class="activity-row"><span class="activity-dot"></span><div><strong>Portal ready</strong><br>Waiting for the first dashboard refresh.</div></div>
+  </div>
+</section>
+
+<section id="rulesSection" class="panel section">
+  <div class="panel-head"><div><h3>Guardrails</h3><p>Quality and account-safety rules</p></div></div>
+  <div class="rule-list">
+    <div class="rule"><b>✓</b> Never invent experience or skills</div>
+    <div class="rule"><b>✓</b> Skip duplicate applications</div>
+    <div class="rule"><b>✓</b> Keep current employer excluded</div>
+    <div class="rule"><b>✓</b> Respect OTP and CAPTCHA</div>
+    <div class="rule"><b>✓</b> Track company, role and date</div>
+    <div class="rule"><b>✓</b> Human approval before final submission</div>
+  </div>
+</section>
+</aside>
+</div>
+
+<section id="profileSection" class="panel section">
+  <div class="panel-head"><div><h3>Candidate profile & targeting</h3><p>Configured for Mohit's current career search.</p></div></div>
+  <div class="profile-grid">
+    <div class="field"><label>Name</label><div class="value">Mohit Varshney</div></div>
+    <div class="field"><label>Experience</label><div class="value">2.5 years</div></div>
+    <div class="field"><label>Primary roles</label><div class="value">Software Engineer · .NET Backend Developer · Full Stack Developer</div></div>
+    <div class="field"><label>Target compensation</label><div class="value">₹10–12 LPA+ target</div></div>
+    <div class="field"><label>Core stack</label><div class="value">C# · ASP.NET Core · MVC · SQL Server · EF Core · Dapper · REST APIs</div></div>
+    <div class="field"><label>Cloud / DevOps</label><div class="value">Azure · Azure Service Bus · RabbitMQ · TeamCity · Octopus Deploy</div></div>
+    <div class="field"><label>Work model</label><div class="value">Remote / Hybrid preferred · Office: Noida / Gurgaon</div></div>
+    <div class="field"><label>Exclusions</label><div class="value">Current employer · internships · poor experience fit</div></div>
+  </div>
+</section>
+
+<div class="footer">Mohit's Autonomous Job Apply Portal · supervised job discovery · credentials stay in your browser session</div>
+</main>
+</div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="modal" class="modal">
+  <div class="modal-box">
+    <h3>Portal admin access</h3>
+    <p>Enter the <b>ADMIN_TOKEN</b> configured in Render. It is stored only in this browser session and is not written into the website code.</p>
+    <input class="input" id="tokenInput" type="password" placeholder="Enter admin token">
+    <div class="actions"><button class="btn primary" id="saveToken">Connect</button><button class="btn" id="closeModal">Cancel</button></div>
+  </div>
+</div>
+
+<script>
+const API='/api';
+let dashboard={jobs:[],applications:[]};
+
+const $=id=>document.getElementById(id);
+const tokenKey='mohit_portal_token';
+const getToken=()=>sessionStorage.getItem(tokenKey)||'';
+
+function toast(message){
+  const el=$('toast'); el.textContent=message; el.style.display='block';
+  clearTimeout(window.__toast); window.__toast=setTimeout(()=>el.style.display='none',3000);
+}
+function headers(){
+  const t=getToken();
+  return t?{'Content-Type':'application/json','x-admin-token':t}:{'Content-Type':'application/json'};
+}
+function showToken(){
+  $('tokenInput').value='';
+  $('modal').style.display='flex';
+  setTimeout(()=>$('tokenInput').focus(),50);
+}
+function hideToken(){$('modal').style.display='none'}
+function formatDate(v){
+  if(!v)return '—';
+  try{return new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}catch{return v}
+}
+function addActivity(title,text){
+  const row=document.createElement('div'); row.className='activity-row';
+  row.innerHTML='<span class="activity-dot"></span><div><strong>'+escapeHtml(title)+'</strong><br>'+escapeHtml(text)+'</div>';
+  $('activity').prepend(row);
+  while($('activity').children.length>5)$('activity').lastElementChild.remove();
+}
+function escapeHtml(v){
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+function filteredJobs(){
+  const q=$('search').value.trim().toLowerCase();
+  const wf=$('workFilter').value;
+  const sf=Number($('scoreFilter').value);
+  return (dashboard.jobs||[]).filter(j=>{
+    const text=(j.title+' '+j.company+' '+j.location+' '+j.description).toLowerCase();
+    if(q&&!text.includes(q))return false;
+    if(Number(j.score||0)<sf)return false;
+    if(wf==='remote'&&!/remote/i.test(j.location||''))return false;
+    if(wf==='noida'&&!/noida/i.test(j.location||''))return false;
+    if(wf==='gurgaon'&&!/gurgaon|gurugram/i.test(j.location||''))return false;
+    return true;
+  });
+}
+function renderJobs(){
+  const list=filteredJobs();
+  $('jobCount').textContent=list.length+' jobs';
+  if(!list.length){
+    $('jobs').innerHTML='<div class="empty">'+(dashboard.jobs?.length?'No jobs match the current filters.':'No jobs loaded yet. Tap <b>Scan jobs now</b>.')+'</div>';
+    return;
+  }
+  $('jobs').innerHTML=list.slice(0,80).map(j=>{
+    const app=(dashboard.applications||[]).find(a=>a.jobId===j.id);
+    const tracked=!!app;
+    const desc=(j.description||'').replace(/\s+/g,' ').slice(0,260);
+    return `<article class="job">
+      <div class="job-top">
+        <div><h4>${escapeHtml(j.title)}</h4><div class="company">${escapeHtml(j.company||'Unknown company')} · ${escapeHtml(j.location||'Remote')}</div></div>
+        <div class="score">${Number(j.score||0)}%</div>
+      </div>
+      <div class="meta"><span class="tag">${escapeHtml(j.source||'Job source')}</span><span class="tag">${j.posted?escapeHtml(formatDate(j.posted)):'Recently found'}</span>${tracked?'<span class="tag">Tracked</span>':''}</div>
+      <p class="desc">${escapeHtml(desc)}${desc.length>=260?'…':''}</p>
+      <div class="job-actions">
+        <a class="btn small primary" href="${escapeHtml(j.url||'#')}" target="_blank" rel="noopener">View job</a>
+        ${tracked?'<button class="btn small" disabled>Application tracked</button>':'<button class="btn small track-btn" data-id="'+escapeHtml(j.id)+'">Track application</button>'}
+      </div>
+    </article>`;
+  }).join('');
+  document.querySelectorAll('.track-btn').forEach(b=>b.onclick=()=>trackApplication(b.dataset.id));
+}
+async function loadDashboard(){
+  if(!getToken()){ $('connection').textContent='Token required'; showToken(); return; }
+  try{
+    $('connection').textContent='Refreshing…';
+    const r=await fetch(API+'/dashboard',{headers:headers()});
+    if(r.status===401){sessionStorage.removeItem(tokenKey);$('connection').textContent='Unauthorized';showToken();return}
+    if(!r.ok)throw new Error('Dashboard request failed');
+    dashboard=await r.json();
+    const s=dashboard.stats||{};
+    $('matches').textContent=s.matches??0;
+    $('shortlist').textContent=s.shortlisted??0;
+    $('applied').textContent=s.applications??0;
+    $('interviews').textContent=s.interviews??0;
+    $('lastScan').textContent='Last scan: '+formatDate(dashboard.lastScan);
+    $('automationStatus').textContent='Connected';
+    $('connection').textContent='Connected';
+    renderJobs();
+    addActivity('Dashboard refreshed',(dashboard.jobs||[]).length+' jobs currently stored.');
+  }catch(e){
+    $('connection').textContent='Connection error';
+    toast(e.message);
+  }
+}
+async function scan(){
+  if(!getToken()){showToken();return}
+  const b=$('scanBtn'); b.disabled=true; b.textContent='Scanning…'; $('scanMessage').textContent='Searching connected job sources…';
+  try{
+    const r=await fetch(API+'/scan',{method:'POST',headers:headers()});
+    if(r.status===401){sessionStorage.removeItem(tokenKey);showToken();throw new Error('Admin token rejected')}
+    if(!r.ok)throw new Error('Scan failed');
+    const d=await r.json();
+    $('scanMessage').textContent='Scan complete: '+(d.added??0)+' new jobs found.';
+    addActivity('Job scan completed',(d.added??0)+' new jobs added · '+(d.total??0)+' total stored.');
+    await loadDashboard();
+  }catch(e){$('scanMessage').textContent=e.message;toast(e.message)}
+  finally{b.disabled=false;b.textContent='Scan jobs now'}
+}
+async function trackApplication(jobId){
+  try{
+    const r=await fetch(API+'/applications',{method:'POST',headers:headers(),body:JSON.stringify({jobId})});
+    if(!r.ok)throw new Error('Could not track application');
+    const d=await r.json();
+    toast('Application added to your tracker');
+    addActivity('Application tracked','The selected role is now in your application queue.');
+    await loadDashboard();
+    if(d.url)window.open(d.url,'_blank','noopener');
+  }catch(e){toast(e.message)}
+}
+
+$('scanBtn').onclick=scan;
+$('refreshBtn').onclick=loadDashboard;
+$('tokenBtn').onclick=showToken;
+$('logoutBtn').onclick=()=>{sessionStorage.removeItem(tokenKey);dashboard={jobs:[],applications:[]};location.reload()};
+$('saveToken').onclick=()=>{const v=$('tokenInput').value.trim();if(!v)return;sessionStorage.setItem(tokenKey,v);hideToken();loadDashboard()};
+$('closeModal').onclick=hideToken;
+$('tokenInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('saveToken').click()});
+$('search').oninput=renderJobs;
+$('workFilter').onchange=renderJobs;
+$('scoreFilter').onchange=renderJobs;
+$('clearFilters').onclick=()=>{$('search').value='';$('workFilter').value='all';$('scoreFilter').value='0';renderJobs()};
+document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth'}));
+
+loadDashboard();
+</script>
+</body>
+</html>
