@@ -174,6 +174,8 @@ function score(job) {
 async function fetchJobs() {
   const results = await Promise.allSettled([
     fetchRemotiveJobs(),
+    fetchArbeitnowJobs(),
+    fetchJobicyJobs(),
     fetchSerpApiJobs(),
     fetchAdzunaJobs()
   ]);
@@ -231,6 +233,36 @@ async function fetchRemotiveJobs() {
     url: job.url,
     source: 'Remotive',
     posted: job.publication_date
+  })).filter(Boolean);
+}
+
+
+async function fetchArbeitnowJobs() {
+  const data = await fetchJson('https://www.arbeitnow.com/api/job-board-api', 'Arbeitnow');
+  return (data.data || []).map(job => normalizeJob({
+    id: 'arbeitnow-' + (job.slug || job.url),
+    title: job.title,
+    company: job.company_name,
+    location: job.location || (job.remote ? 'Remote' : 'Location not specified'),
+    description: job.description,
+    url: job.url,
+    source: 'Arbeitnow',
+    posted: job.created_at || null
+  })).filter(Boolean);
+}
+
+async function fetchJobicyJobs() {
+  const params = new URLSearchParams({ count: '50', tag: 'developer' });
+  const data = await fetchJson('https://jobicy.com/api/v2/remote-jobs?' + params, 'Jobicy');
+  return (data.jobs || []).map(job => normalizeJob({
+    id: 'jobicy-' + job.id,
+    title: job.jobTitle,
+    company: job.companyName,
+    location: job.jobGeo || 'Remote',
+    description: job.jobDescription || job.jobExcerpt,
+    url: job.url,
+    source: 'Jobicy',
+    posted: job.pubDate || null
   })).filter(Boolean);
 }
 
@@ -351,6 +383,8 @@ app.get('/api/dashboard', auth, async (req, res) => {
       sources: [...new Set((db.jobs || []).map(job => job.source).filter(Boolean))],
       configuredSources: {
         remotive: true,
+        arbeitnow: true,
+        jobicy: true,
         googleJobs: Boolean(process.env.SERPAPI_API_KEY),
         adzuna: Boolean(process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY)
       },
