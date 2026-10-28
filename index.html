@@ -2,372 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#08111f">
-<title>Mohit's Autonomous Job Apply Portal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f7fb">
+<meta name="description" content="A private, supervised job search workspace for finding and tracking relevant software engineering opportunities.">
+<title>CareerDesk · Job Search Workspace</title>
 <style>
-:root{
-  --bg:#07101d;--panel:#0d1929;--panel2:#111f32;--panel3:#16263c;
-  --text:#f5f8ff;--muted:#91a2ba;--line:#20334d;
-  --primary:#6d63ff;--primary2:#4f46e5;--cyan:#22d3ee;
-  --green:#35d49a;--yellow:#f7c948;--red:#ff6b7a;
-  --shadow:0 18px 55px rgba(0,0,0,.24);--radius:18px
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:radial-gradient(circle at 15% -10%,#172d52 0,#07101d 38%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select{font:inherit}
-button{cursor:pointer}
-a{color:inherit;text-decoration:none}
-.app{min-height:100vh}
-.shell{max-width:1400px;margin:auto;padding:22px}
-.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
-.brand{display:flex;align-items:center;gap:12px}
-.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:19px;background:linear-gradient(135deg,var(--primary),var(--cyan));box-shadow:0 10px 30px rgba(109,99,255,.28)}
-.brand h1{font-size:17px;margin:0;letter-spacing:-.2px}
-.brand p{font-size:11px;color:var(--muted);margin:3px 0 0}
-.top-actions{display:flex;align-items:center;gap:9px}
-.status{border:1px solid var(--line);background:rgba(13,25,41,.8);padding:9px 12px;border-radius:999px;color:var(--muted);font-size:12px}
-.status i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:7px}
-.btn{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--panel);color:var(--text);font-weight:750}
-.btn:hover{filter:brightness(1.12)}
-.btn.primary{border-color:transparent;background:linear-gradient(135deg,var(--primary),var(--primary2));box-shadow:0 10px 25px rgba(79,70,229,.25)}
-.btn.small{padding:8px 10px;font-size:12px}
-.btn.ghost{background:transparent}
-.btn.danger{color:var(--red);border-color:rgba(255,107,122,.35)}
-.layout{display:grid;grid-template-columns:230px 1fr;gap:18px}
-.sidebar{position:sticky;top:18px;height:fit-content;background:rgba(13,25,41,.84);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);backdrop-filter:blur(14px)}
-.nav-title{padding:10px;color:#60748f;font-size:10px;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
-.nav{display:grid;gap:4px}
-.nav button{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:11px 12px;border-radius:11px;font-weight:650}
-.nav button.active,.nav button:hover{background:var(--panel3);color:var(--text)}
-.side-note{margin-top:18px;border-top:1px solid var(--line);padding:14px 10px 4px;color:var(--muted);font-size:11px;line-height:1.55}
-.main{min-width:0}
-.hero{display:grid;grid-template-columns:1.45fr .75fr;gap:16px;margin-bottom:16px}
-.hero-card,.panel{background:linear-gradient(145deg,rgba(17,31,50,.95),rgba(10,20,34,.95));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
-.hero-card{padding:28px}
-.eyebrow{font-size:11px;color:var(--cyan);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-.hero h2{font-size:36px;line-height:1.06;letter-spacing:-1.4px;margin:10px 0 12px;max-width:700px}
-.hero p{color:var(--muted);line-height:1.6;max-width:720px;margin:0}
-.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}
-.hero-side{padding:22px}
-.side-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.side-value{font-size:29px;font-weight:900;margin:10px 0 2px}
-.side-sub{font-size:12px;color:var(--muted)}
-.progress{height:7px;background:#091423;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:17px 0 10px}
-.progress span{display:block;height:100%;width:78%;background:linear-gradient(90deg,var(--primary),var(--cyan));border-radius:99px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
-.kpi{padding:17px;background:var(--panel);border:1px solid var(--line);border-radius:16px}
-.kpi .label{font-size:11px;color:var(--muted)}
-.kpi .value{font-size:27px;font-weight:900;margin-top:6px}
-.kpi .hint{font-size:10px;color:#6f849f;margin-top:4px}
-.content-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.7fr);gap:16px}
-.panel{padding:20px}
-.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:15px}
-.panel-head h3{font-size:18px;margin:0}
-.panel-head p{font-size:11px;color:var(--muted);margin:4px 0 0}
-.filters{display:grid;grid-template-columns:1.5fr .8fr .8fr auto;gap:8px;margin-bottom:12px}
-.input,.select{width:100%;background:#0a1525;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 11px;outline:none}
-.input:focus,.select:focus{border-color:var(--primary)}
-.jobs{display:grid;gap:9px}
-.job{padding:15px;background:rgba(22,38,60,.65);border:1px solid var(--line);border-radius:14px}
-.job-top{display:flex;justify-content:space-between;gap:12px}
-.job h4{margin:0;font-size:14px;line-height:1.35}
-.company{font-size:12px;color:var(--muted);margin-top:4px}
-.score{flex:0 0 auto;font-weight:900;color:var(--green);font-size:13px}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.tag{font-size:10px;color:#aab9ce;background:#0b1727;border:1px solid var(--line);border-radius:999px;padding:4px 7px}
-.desc{font-size:11px;color:#8294ad;line-height:1.5;margin:10px 0 0}
-.job-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:13px}
-.activity{display:grid;gap:12px}
-.activity-row{display:flex;gap:10px;align-items:flex-start}
-.activity-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-top:5px;flex:0 0 auto}
-.activity-row strong{font-size:12px}
-.activity-row div{font-size:11px;color:var(--muted);line-height:1.45}
-.rule-list{display:grid;gap:8px}
-.rule{display:flex;align-items:center;gap:8px;color:#b6c4d6;font-size:11px}
-.rule b{color:var(--green)}
-.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field label{display:block;color:#71849e;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin-bottom:5px}
-.field .value{padding:10px 11px;border-radius:10px;background:#0a1525;border:1px solid var(--line);font-size:11px;color:#c8d3e2;min-height:37px}
-.section{margin-top:16px}
-.toast{position:fixed;right:18px;bottom:18px;max-width:330px;padding:12px 14px;border-radius:12px;background:#102039;border:1px solid var(--line);box-shadow:var(--shadow);font-size:12px;display:none;z-index:20}
-.modal{position:fixed;inset:0;background:rgba(2,7,14,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:30}
-.modal-box{width:min(430px,100%);background:#0d1929;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow)}
-.modal-box h3{margin:0 0 7px}.modal-box p{font-size:12px;color:var(--muted);line-height:1.5}
-.footer{text-align:center;color:#62758f;font-size:10px;padding:25px 0}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;align-items:center;gap:8px;overflow:auto}.nav-title,.side-note{display:none}.nav{display:flex}.nav button{white-space:nowrap}.hero{grid-template-columns:1fr}.content-grid{grid-template-columns:1fr}}
-@media(max-width:680px){.shell{padding:13px}.topbar{height:auto}.top-actions .btn{display:none}.brand h1{font-size:14px}.hero-card{padding:21px}.hero h2{font-size:28px}.kpis{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.job-top{align-items:flex-start}.profile-grid{grid-template-columns:1fr}}
+:root{color-scheme:light;--bg:#f5f7fb;--surface:#fff;--surface-alt:#f8fafc;--ink:#172033;--muted:#68758a;--line:#e4e9f1;--brand:#4f46e5;--brand-dark:#3730a3;--brand-soft:#eef2ff;--teal:#0f766e;--teal-soft:#e6fffb;--amber:#92400e;--amber-soft:#fffbeb;--red:#b42318;--red-soft:#fff1f0;--shadow:0 12px 32px rgba(23,32,51,.06);--radius:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #a5b4fc;outline-offset:2px}a{color:inherit;text-decoration:none}.shell{max-width:1480px;margin:auto;padding:24px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--brand);color:white;font-size:20px;font-weight:850;box-shadow:0 8px 18px #4f46e528}.brand h1{font-size:17px;letter-spacing:-.3px;margin:0}.brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}.top-actions{display:flex;align-items:center;gap:9px}.connection{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:12px}.dot{width:7px;height:7px;border-radius:50%;background:#94a3b8}.dot.ok{background:#10b981}.dot.bad{background:#ef4444}.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:10px 13px;border-radius:10px;font-weight:700;transition:.15s ease}.btn:hover{border-color:#c7d2fe;background:#fafaff}.btn:disabled{opacity:.55;cursor:not-allowed}.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}.btn.primary:hover{background:var(--brand-dark)}.btn.small{padding:7px 10px;font-size:12px}.layout{display:grid;grid-template-columns:218px minmax(0,1fr);gap:22px}.sidebar{align-self:start;position:sticky;top:20px;padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.nav-title{padding:9px 10px;color:#98a2b3;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.nav{display:grid;gap:4px}.nav button{border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:10px;color:var(--muted);font-weight:650}.nav button:hover,.nav button.active{background:var(--brand-soft);color:var(--brand-dark)}.sidebar-note{margin:14px 5px 3px;padding:13px 8px 3px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.6}.main{min-width:0}.hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(250px,.75fr);gap:16px;margin-bottom:18px}.hero-card,.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.hero-card{padding:28px;background:linear-gradient(120deg,#fff 0%,#f5f6ff 100%)}.eyebrow{font-size:11px;color:var(--brand);font-weight:850;letter-spacing:.1em;text-transform:uppercase}.hero h2{font-size:clamp(27px,3vw,38px);line-height:1.12;letter-spacing:-1.2px;margin:10px 0 12px;max-width:700px}.hero p{color:var(--muted);max-width:700px;margin:0;line-height:1.7}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.scan-message{font-size:12px;color:var(--muted);margin-top:12px;min-height:18px}.hero-side{padding:22px;display:flex;flex-direction:column;justify-content:space-between}.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;font-weight:800}.side-value{font-size:25px;letter-spacing:-.5px;font-weight:850;margin:9px 0 4px}.side-sub{font-size:12px;color:var(--muted)}.status-note{margin-top:17px;padding:12px;border-radius:12px;background:var(--surface-alt);font-size:12px;color:var(--muted)}.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.kpi{padding:17px;background:var(--surface);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.kpi-top{display:flex;justify-content:space-between;gap:10px;align-items:center}.kpi-label{font-size:12px;color:var(--muted);font-weight:650}.kpi-icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);font-size:14px;font-weight:900}.kpi-value{font-size:29px;font-weight:850;letter-spacing:-.8px;margin-top:9px}.kpi-hint{font-size:11px;color:#98a2b3;margin-top:2px}.content-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.7fr);gap:16px}.panel{padding:20px;min-width:0}.panel+.panel{margin-top:16px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-head h3{font-size:17px;letter-spacing:-.3px;margin:0}.panel-head p{font-size:12px;color:var(--muted);margin:4px 0 0}.pill{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:var(--surface-alt);border:1px solid var(--line);font-size:11px;font-weight:750;color:var(--muted);white-space:nowrap}.pill.good{background:var(--teal-soft);border-color:#b9f3e9;color:var(--teal)}.pill.warn{background:var(--amber-soft);border-color:#fde68a;color:var(--amber)}.filters{display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(120px,.8fr) minmax(110px,.7fr) auto;gap:8px;margin-bottom:13px}.input,.select{width:100%;min-width:0;background:#fff;border:1px solid #dbe2ec;border-radius:10px;padding:10px 11px;color:var(--ink)}.input::placeholder{color:#9aa5b5}.jobs{display:grid;gap:10px}.job{padding:15px;border:1px solid var(--line);border-radius:13px;background:#fff;transition:border-color .15s,box-shadow .15s}.job:hover{border-color:#c7d2fe;box-shadow:0 6px 18px #4f46e50c}.job-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.job h4{font-size:14px;line-height:1.4;margin:0;font-weight:800}.company{font-size:12px;color:var(--muted);margin-top:4px}.score-wrap{text-align:right;flex:0 0 auto}.score{font-size:14px;font-weight:850;color:var(--teal)}.score-label{font-size:10px;color:#98a2b3}.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.tag{font-size:10px;color:#536176;background:#f8fafc;border:1px solid #e7ebf2;border-radius:999px;padding:4px 7px}.tag.match{background:var(--brand-soft);border-color:#dfe3ff;color:var(--brand-dark)}.desc{font-size:12px;color:#68758a;line-height:1.6;margin:10px 0 0}.job-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px}.empty{padding:28px 18px;text-align:center;color:var(--muted);border:1px dashed #d5dce7;border-radius:12px;background:#fbfcfe}.empty strong{display:block;color:var(--ink);margin-bottom:5px}.activity{display:grid;gap:13px}.activity-row{display:flex;gap:10px;align-items:flex-start}.activity-dot{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:#818cf8;margin-top:5px}.activity-row strong{font-size:12px;color:var(--ink)}.activity-row div{font-size:11px;color:var(--muted);line-height:1.5}.rule-list{display:grid;gap:10px}.rule{display:flex;align-items:flex-start;gap:9px;color:#59667a;font-size:12px}.check{width:18px;height:18px;flex:0 0 auto;border-radius:6px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;font-size:11px;font-weight:900}.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field label{display:block;color:#8a95a6;font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin-bottom:5px}.field .value{padding:10px 11px;border-radius:10px;background:var(--surface-alt);border:1px solid var(--line);font-size:12px;color:#4c586c;min-height:40px}.section{margin-top:17px}.applications{display:grid;gap:9px}.application{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:12px;align-items:center}.application h4{margin:0;font-size:12px}.application p{margin:3px 0 0;color:var(--muted);font-size:11px}.application .select{font-size:11px;padding:8px}.footer{text-align:center;color:#97a1b1;font-size:11px;padding:25px 0 8px}.toast{position:fixed;right:20px;bottom:20px;max-width:min(380px,calc(100vw - 40px));padding:13px 16px;border-radius:12px;background:#172033;color:white;box-shadow:0 12px 35px #17203330;font-size:13px;display:none;z-index:20}.modal{position:fixed;inset:0;background:#17203380;display:none;align-items:center;justify-content:center;padding:20px;z-index:30}.modal-box{width:min(430px,100%);background:white;border:1px solid var(--line);border-radius:18px;padding:23px;box-shadow:0 24px 80px #17203333}.modal-box h3{margin:0 0 7px;font-size:19px}.modal-box p{font-size:12px;color:var(--muted);line-height:1.6}.modal-box .input{margin-top:8px}.muted{color:var(--muted)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;align-items:center;gap:8px;overflow:auto}.nav-title,.sidebar-note{display:none}.nav{display:flex}.nav button{white-space:nowrap}.content-grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr}}
+@media(max-width:700px){.shell{padding:13px}.topbar{align-items:flex-start}.brand h1{font-size:14px}.brand p{font-size:11px}.top-actions{gap:5px}.connection{font-size:0;padding:10px}.connection .dot{margin:0}.top-actions .btn{padding:8px;font-size:11px}.hero-card{padding:21px}.hero h2{font-size:28px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.kpi{padding:13px}.kpi-value{font-size:25px}.panel{padding:15px}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.filters #clearFilters{grid-column:1/-1}.profile-grid{grid-template-columns:1fr}.application{grid-template-columns:1fr}.application .select{width:100%}.nav button{padding:9px 10px;font-size:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
 <body>
-<div class="app">
 <div class="shell">
 <header class="topbar">
-  <div class="brand">
-    <div class="logo">M</div>
-    <div><h1>Mohit's Autonomous Job Apply Portal</h1><p>Personal job-search command center</p></div>
-  </div>
+  <div class="brand"><div class="logo" aria-hidden="true">C</div><div><h1>CareerDesk</h1><p>Personal job-search workspace · .NET & backend roles</p></div></div>
   <div class="top-actions">
-    <span class="status"><i></i><span id="connection">Connecting…</span></span>
-    <button class="btn small" id="tokenBtn">Admin access</button>
-    <button class="btn small" id="logoutBtn">Lock</button>
+    <span class="connection" title="Portal connection status"><span id="connectionDot" class="dot"></span><span id="connection">Connecting…</span></span>
+    <button class="btn small" id="tokenBtn" type="button">Admin access</button>
+    <button class="btn small" id="logoutBtn" type="button">Lock</button>
   </div>
 </header>
-
 <div class="layout">
 <aside class="sidebar">
   <div class="nav-title">Workspace</div>
-  <nav class="nav">
-    <button class="active" data-scroll="overview">Overview</button>
-    <button data-scroll="jobsSection">Job matches</button>
-    <button data-scroll="profileSection">Profile</button>
-    <button data-scroll="rulesSection">Guardrails</button>
+  <nav class="nav" aria-label="Main navigation">
+    <button class="active" data-scroll="overview" type="button">Overview</button>
+    <button data-scroll="jobsSection" type="button">Job matches</button>
+    <button data-scroll="applicationsSection" type="button">Applications</button>
+    <button data-scroll="profileSection" type="button">Profile</button>
+    <button data-scroll="rulesSection" type="button">Preferences</button>
   </nav>
-  <div class="side-note">Scheduled scans are planned twice daily after the GitHub Actions workflow is enabled on the main branch. Manual scans are rate-limited to once every 12 hours.</div>
+  <div class="sidebar-note">Your job search stays supervised. The portal discovers and ranks roles; you review each opportunity and submit applications yourself.</div>
 </aside>
-
 <main class="main">
 <section id="overview" class="hero">
   <div class="hero-card">
-    <div class="eyebrow">Career automation workspace</div>
-    <h2>Find stronger .NET opportunities without repetitive searching.</h2>
-    <p>Discover roles, score them against Mohit's backend profile, remove duplicates and keep the application process supervised. Remote and Hybrid are preferred; office roles are limited to Noida and Gurgaon.</p>
-    <div class="actions">
-      <button class="btn primary" id="scanBtn">Scan jobs now</button>
-      <button class="btn" id="refreshBtn">Refresh dashboard</button>
-    </div>
-    <div id="scanMessage" style="margin-top:12px;color:var(--muted);font-size:11px"></div>
+    <div class="eyebrow">Career search, organised</div>
+    <h2>Spend less time searching. More time on the right opportunities.</h2>
+    <p>Find remote roles, rank them against your .NET backend profile, and manage applications in one focused workspace. Remote and hybrid are preferred; office roles should be in Noida or Gurgaon.</p>
+    <div class="actions"><button class="btn primary" id="scanBtn" type="button">Run job scan</button><button class="btn" id="refreshBtn" type="button">Refresh dashboard</button></div>
+    <div id="scanMessage" class="scan-message" role="status" aria-live="polite"></div>
   </div>
   <div class="panel hero-side">
-    <div class="side-label">Automation status</div>
-    <div class="side-value" id="automationStatus">Ready</div>
-    <div class="side-sub">Scheduled scans: twice daily after workflow activation</div>
-    <div class="progress"><span></span></div>
-    <div class="side-sub" id="lastScan">Last scan: —</div>
+    <div><div class="section-label">Portal status</div><div class="side-value" id="automationStatus">Checking connection</div><div class="side-sub">Job feed: Remotive · Storage: hosted database when configured</div></div>
+    <div class="status-note"><strong>Last scan</strong><div id="lastScan" style="margin-top:4px">Not available yet</div><div style="margin-top:8px">Scans are limited to protect the public job feed from excessive requests.</div></div>
   </div>
 </section>
-
-<section class="kpis">
-  <div class="kpi"><div class="label">Matching jobs</div><div class="value" id="matches">0</div><div class="hint">score ≥ 55</div></div>
-  <div class="kpi"><div class="label">Shortlisted</div><div class="value" id="shortlist">0</div><div class="hint">ready for review</div></div>
-  <div class="kpi"><div class="label">Applications</div><div class="value" id="applied">0</div><div class="hint">tracked in portal</div></div>
-  <div class="kpi"><div class="label">Interviews</div><div class="value" id="interviews">0</div><div class="hint">pipeline status</div></div>
+<section class="kpis" aria-label="Job search statistics">
+  <div class="kpi"><div class="kpi-top"><span class="kpi-label">Relevant matches</span><span class="kpi-icon">◎</span></div><div class="kpi-value" id="matches">—</div><div class="kpi-hint">Score of 55 or higher</div></div>
+  <div class="kpi"><div class="kpi-top"><span class="kpi-label">Shortlisted</span><span class="kpi-icon">★</span></div><div class="kpi-value" id="shortlist">—</div><div class="kpi-hint">Ready for your review</div></div>
+  <div class="kpi"><div class="kpi-top"><span class="kpi-label">Tracked applications</span><span class="kpi-icon">↗</span></div><div class="kpi-value" id="applied">—</div><div class="kpi-hint">Saved to your pipeline</div></div>
+  <div class="kpi"><div class="kpi-top"><span class="kpi-label">Interviews</span><span class="kpi-icon">✓</span></div><div class="kpi-value" id="interviews">—</div><div class="kpi-hint">Status marked as interview</div></div>
 </section>
-
 <div class="content-grid">
 <section id="jobsSection" class="panel">
-  <div class="panel-head">
-    <div><h3>Top matching jobs</h3><p>Live results from the connected job scanner.</p></div>
-    <span class="status" id="jobCount">0 jobs</span>
-  </div>
+  <div class="panel-head"><div><h3>Job opportunities</h3><p>Ranked by keyword relevance to your profile. Scores are heuristic, not guarantees.</p></div><span class="pill" id="jobCount">0 jobs</span></div>
   <div class="filters">
-    <input class="input search" id="search" placeholder="Search title, company or technology">
-    <select class="select" id="workFilter"><option value="all">All locations</option><option value="remote">Remote</option><option value="noida">Noida</option><option value="gurgaon">Gurgaon</option></select>
-    <select class="select" id="scoreFilter"><option value="0">Any score</option><option value="70">70+ score</option><option value="80">80+ score</option><option value="90">90+ score</option></select>
-    <button class="btn small" id="clearFilters">Clear</button>
+    <label class="sr-only" for="search">Search jobs</label><input class="input search" id="search" placeholder="Search title, company or skill" autocomplete="off">
+    <label class="sr-only" for="workFilter">Location filter</label><select class="select" id="workFilter"><option value="all">All locations</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="noida">Noida</option><option value="gurgaon">Gurgaon</option></select>
+    <label class="sr-only" for="scoreFilter">Minimum score</label><select class="select" id="scoreFilter"><option value="0">Any score</option><option value="55">55+ score</option><option value="70">70+ score</option><option value="80">80+ score</option></select>
+    <button class="btn small" id="clearFilters" type="button">Clear filters</button>
   </div>
-  <div id="jobs" class="jobs"><div class="empty">No jobs loaded yet. Tap <b>Scan jobs now</b>.</div></div>
+  <div id="jobs" class="jobs"><div class="empty"><strong>Connect to your workspace</strong>Enter your admin token to load saved job matches.</div></div>
 </section>
-
 <aside>
 <section class="panel">
-  <div class="panel-head"><div><h3>Activity</h3><p>Latest portal events</p></div></div>
-  <div id="activity" class="activity">
-    <div class="activity-row"><span class="activity-dot"></span><div><strong>Portal ready</strong><br>Waiting for the first dashboard refresh.</div></div>
-  </div>
+  <div class="panel-head"><div><h3>Recent activity</h3><p>Updates from this browser session</p></div></div>
+  <div id="activity" class="activity"><div class="activity-row"><span class="activity-dot"></span><div><strong>Workspace ready</strong><br>Connect to load your saved job data.</div></div></div>
 </section>
-
 <section id="rulesSection" class="panel section">
-  <div class="panel-head"><div><h3>Guardrails</h3><p>Quality and account-safety rules</p></div></div>
+  <div class="panel-head"><div><h3>Search preferences</h3><p>Current targeting rules</p></div></div>
   <div class="rule-list">
-    <div class="rule"><b>✓</b> Never invent experience or skills</div>
-    <div class="rule"><b>✓</b> Skip duplicate applications</div>
-    <div class="rule"><b>✓</b> Keep current employer excluded</div>
-    <div class="rule"><b>✓</b> Respect OTP and CAPTCHA</div>
-    <div class="rule"><b>✓</b> Track company, role and date</div>
-    <div class="rule"><b>✓</b> Human approval before final submission</div>
+    <div class="rule"><span class="check">✓</span><span>Prioritise .NET, C#, ASP.NET Core and backend roles</span></div>
+    <div class="rule"><span class="check">✓</span><span>Prefer remote and hybrid opportunities</span></div>
+    <div class="rule"><span class="check">✓</span><span>Restrict office-role targeting to Noida and Gurgaon</span></div>
+    <div class="rule"><span class="check">✓</span><span>Exclude current employer and internships from scoring</span></div>
+    <div class="rule"><span class="check">✓</span><span>Prevent duplicate listings and tracked applications</span></div>
+    <div class="rule"><span class="check">✓</span><span>Keep final employer submission under your control</span></div>
   </div>
 </section>
 </aside>
 </div>
-
+<section id="applicationsSection" class="panel section">
+  <div class="panel-head"><div><h3>Application pipeline</h3><p>Track progress after you choose to pursue a role.</p></div><span class="pill" id="applicationCount">0 tracked</span></div>
+  <div id="applications" class="applications"><div class="empty"><strong>No tracked applications yet</strong>Use “Track application” on a job to add it here. Tracking does not submit the application.</div></div>
+</section>
 <section id="profileSection" class="panel section">
-  <div class="panel-head"><div><h3>Candidate profile & targeting</h3><p>Configured for Mohit's current career search.</p></div></div>
+  <div class="panel-head"><div><h3>Candidate profile</h3><p>Matching configuration currently used by the backend.</p></div><span class="pill good">Profile configured</span></div>
   <div class="profile-grid">
     <div class="field"><label>Name</label><div class="value">Mohit Varshney</div></div>
-    <div class="field"><label>Experience</label><div class="value">2.5 years</div></div>
-    <div class="field"><label>Primary roles</label><div class="value">Software Engineer · .NET Backend Developer · Full Stack Developer</div></div>
-    <div class="field"><label>Target compensation</label><div class="value">₹10–12 LPA+ target</div></div>
-    <div class="field"><label>Core stack</label><div class="value">C# · ASP.NET Core · MVC · SQL Server · EF Core · Dapper · REST APIs</div></div>
-    <div class="field"><label>Cloud / DevOps</label><div class="value">Azure · Azure Service Bus · RabbitMQ · TeamCity · Octopus Deploy</div></div>
-    <div class="field"><label>Work model</label><div class="value">Remote / Hybrid preferred · Office: Noida / Gurgaon</div></div>
-    <div class="field"><label>Exclusions</label><div class="value">Current employer · internships · poor experience fit</div></div>
+    <div class="field"><label>Experience</label><div class="value">Approximately 2.5 years</div></div>
+    <div class="field"><label>Target roles</label><div class="value">.NET Backend Developer · C# Engineer · ASP.NET Core · Software Engineer</div></div>
+    <div class="field"><label>Target compensation</label><div class="value">₹10–12 LPA+ target; verify salary in each listing</div></div>
+    <div class="field"><label>Backend skills</label><div class="value">C# · ASP.NET Core · MVC · SQL Server · EF Core · Dapper · REST APIs</div></div>
+    <div class="field"><label>Cloud & delivery</label><div class="value">Azure · Azure Service Bus · RabbitMQ · TeamCity · Octopus Deploy</div></div>
+    <div class="field"><label>Work model</label><div class="value">Remote / hybrid preferred · office in Noida / Gurgaon</div></div>
+    <div class="field"><label>Important limitation</label><div class="value">Current feed focuses on remote jobs; salary and hybrid eligibility are not reliably verified by the source.</div></div>
   </div>
 </section>
-
-<div class="footer">Mohit's Autonomous Job Apply Portal · supervised job discovery · credentials stay in your browser session</div>
+<div class="footer">CareerDesk · Private job-search workspace · No automatic employer submissions · Protect your admin token</div>
 </main>
 </div>
 </div>
-
-<div id="toast" class="toast"></div>
-<div id="modal" class="modal">
-  <div class="modal-box">
-    <h3>Portal admin access</h3>
-    <p>Enter the <b>ADMIN_TOKEN</b> configured in Render. It is stored only in this browser session and is not written into the website code.</p>
-    <input class="input" id="tokenInput" type="password" placeholder="Enter admin token">
-    <div class="actions"><button class="btn primary" id="saveToken">Connect</button><button class="btn" id="closeModal">Cancel</button></div>
-  </div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box"><h3 id="modalTitle">Connect your workspace</h3><p>Enter the admin token configured in your hosting environment. It is held in this browser tab's session storage and is never embedded in the page source.</p><label class="sr-only" for="tokenInput">Admin token</label><input class="input" id="tokenInput" type="password" placeholder="Admin token" autocomplete="current-password"><div class="actions"><button class="btn primary" id="saveToken" type="button">Connect securely</button><button class="btn" id="closeModal" type="button">Cancel</button></div></div>
 </div>
-
 <script>
-const API='/api';
+"use strict";
+const API="/api";
 let dashboard={jobs:[],applications:[]};
-
 const $=id=>document.getElementById(id);
-const tokenKey='mohit_portal_token';
-const getToken=()=>sessionStorage.getItem(tokenKey)||'';
-
-function toast(message){
-  const el=$('toast'); el.textContent=message; el.style.display='block';
-  clearTimeout(window.__toast); window.__toast=setTimeout(()=>el.style.display='none',3000);
-}
-function headers(){
-  const t=getToken();
-  return t?{'Content-Type':'application/json','x-admin-token':t}:{'Content-Type':'application/json'};
-}
-function showToken(){
-  $('tokenInput').value='';
-  $('modal').style.display='flex';
-  setTimeout(()=>$('tokenInput').focus(),50);
-}
-function hideToken(){$('modal').style.display='none'}
-function formatDate(v){
-  if(!v)return '—';
-  try{return new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})}catch{return v}
-}
-function addActivity(title,text){
-  const row=document.createElement('div'); row.className='activity-row';
-  row.innerHTML='<span class="activity-dot"></span><div><strong>'+escapeHtml(title)+'</strong><br>'+escapeHtml(text)+'</div>';
-  $('activity').prepend(row);
-  while($('activity').children.length>5)$('activity').lastElementChild.remove();
-}
-function escapeHtml(v){
-  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-}
-function filteredJobs(){
-  const q=$('search').value.trim().toLowerCase();
-  const wf=$('workFilter').value;
-  const sf=Number($('scoreFilter').value);
-  return (dashboard.jobs||[]).filter(j=>{
-    const text=(j.title+' '+j.company+' '+j.location+' '+j.description).toLowerCase();
-    if(q&&!text.includes(q))return false;
-    if(Number(j.score||0)<sf)return false;
-    if(wf==='remote'&&!/remote/i.test(j.location||''))return false;
-    if(wf==='noida'&&!/noida/i.test(j.location||''))return false;
-    if(wf==='gurgaon'&&!/gurgaon|gurugram/i.test(j.location||''))return false;
-    return true;
-  });
-}
-function renderJobs(){
-  const list=filteredJobs();
-  $('jobCount').textContent=list.length+' jobs';
-  if(!list.length){
-    $('jobs').innerHTML='<div class="empty">'+(dashboard.jobs?.length?'No jobs match the current filters.':'No jobs loaded yet. Tap <b>Scan jobs now</b>.')+'</div>';
-    return;
-  }
-  $('jobs').innerHTML=list.slice(0,80).map(j=>{
-    const app=(dashboard.applications||[]).find(a=>a.jobId===j.id);
-    const tracked=!!app;
-    const desc=(j.description||'').replace(/\s+/g,' ').slice(0,260);
-    return `<article class="job">
-      <div class="job-top">
-        <div><h4>${escapeHtml(j.title)}</h4><div class="company">${escapeHtml(j.company||'Unknown company')} · ${escapeHtml(j.location||'Remote')}</div></div>
-        <div class="score">${Number(j.score||0)}%</div>
-      </div>
-      <div class="meta"><span class="tag">${escapeHtml(j.source||'Job source')}</span><span class="tag">${j.posted?escapeHtml(formatDate(j.posted)):'Recently found'}</span>${tracked?'<span class="tag">Tracked</span>':''}</div>
-      <p class="desc">${escapeHtml(desc)}${desc.length>=260?'…':''}</p>
-      <div class="job-actions">
-        <a class="btn small primary" href="${escapeHtml(j.url||'#')}" target="_blank" rel="noopener">View job</a>
-        ${tracked?'<button class="btn small" disabled>Application tracked</button>':'<button class="btn small track-btn" data-id="'+escapeHtml(j.id)+'">Track application</button>'}
-      </div>
-    </article>`;
-  }).join('');
-  document.querySelectorAll('.track-btn').forEach(b=>b.onclick=()=>trackApplication(b.dataset.id));
-}
-async function loadDashboard(){
-  if(!getToken()){ $('connection').textContent='Token required'; showToken(); return; }
-  try{
-    $('connection').textContent='Refreshing…';
-    const r=await fetch(API+'/dashboard',{headers:headers()});
-    if(r.status===401){sessionStorage.removeItem(tokenKey);$('connection').textContent='Unauthorized';showToken();return}
-    if(!r.ok)throw new Error('Dashboard request failed');
-    dashboard=await r.json();
-    const s=dashboard.stats||{};
-    $('matches').textContent=s.matches??0;
-    $('shortlist').textContent=s.shortlisted??0;
-    $('applied').textContent=s.applications??0;
-    $('interviews').textContent=s.interviews??0;
-    $('lastScan').textContent='Last scan: '+formatDate(dashboard.lastScan);
-    $('automationStatus').textContent='Connected';
-    $('connection').textContent='Connected';
-    renderJobs();
-    addActivity('Dashboard refreshed',(dashboard.jobs||[]).length+' jobs currently stored.');
-  }catch(e){
-    $('connection').textContent='Connection error';
-    toast(e.message);
-  }
-}
-async function scan(){
-  if(!getToken()){showToken();return}
-  const b=$('scanBtn'); b.disabled=true; b.textContent='Scanning…'; $('scanMessage').textContent='Searching connected job sources…';
-  try{
-    const r=await fetch(API+'/scan',{method:'POST',headers:headers()});
-    if(r.status===401){sessionStorage.removeItem(tokenKey);showToken();throw new Error('Admin token rejected')}
-    if(r.status===429){
-      const detail=await r.json().catch(()=>({}));
-      const waitHours=Math.max(1,Math.ceil((detail.retryAfterSeconds||43200)/3600));
-      throw new Error(detail.error||('Please wait about '+waitHours+' hour(s) before scanning again.'));
-    }
-    if(!r.ok){
-      const detail=await r.json().catch(()=>({}));
-      throw new Error(detail.error||'Scan failed');
-    }
-    const d=await r.json();
-    $('scanMessage').textContent='Scan complete: '+(d.added??0)+' new jobs found.';
-    addActivity('Job scan completed',(d.added??0)+' new jobs added · '+(d.total??0)+' total stored.');
-    await loadDashboard();
-  }catch(e){$('scanMessage').textContent=e.message;toast(e.message)}
-  finally{b.disabled=false;b.textContent='Scan jobs now'}
-}
-async function trackApplication(jobId){
-  try{
-    const r=await fetch(API+'/applications',{method:'POST',headers:headers(),body:JSON.stringify({jobId})});
-    if(!r.ok)throw new Error('Could not track application');
-    const d=await r.json();
-    toast('Application added to your tracker');
-    addActivity('Application tracked','The selected role is now in your application queue.');
-    await loadDashboard();
-    if(d.url)window.open(d.url,'_blank','noopener');
-  }catch(e){toast(e.message)}
-}
-
-$('scanBtn').onclick=scan;
-$('refreshBtn').onclick=loadDashboard;
-$('tokenBtn').onclick=showToken;
-$('logoutBtn').onclick=()=>{sessionStorage.removeItem(tokenKey);dashboard={jobs:[],applications:[]};location.reload()};
-$('saveToken').onclick=()=>{const v=$('tokenInput').value.trim();if(!v)return;sessionStorage.setItem(tokenKey,v);hideToken();loadDashboard()};
-$('closeModal').onclick=hideToken;
-$('tokenInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('saveToken').click()});
-$('search').oninput=renderJobs;
-$('workFilter').onchange=renderJobs;
-$('scoreFilter').onchange=renderJobs;
-$('clearFilters').onclick=()=>{$('search').value='';$('workFilter').value='all';$('scoreFilter').value='0';renderJobs()};
-document.querySelectorAll('[data-scroll]').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.scroll).scrollIntoView({behavior:'smooth'}));
-
-loadDashboard();
+const tokenKey="mohit_portal_token";
+const getToken=()=>sessionStorage.getItem(tokenKey)||"";
+let toastTimer;
+function toast(message){const el=$("toast");el.textContent=message;el.style.display="block";clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.style.display="none",3500)}
+function headers(){return {"Content-Type":"application/json","x-admin-token":getToken()}}
+function showToken(){$("tokenInput").value="";$("modal").style.display="flex";setTimeout(()=>$("tokenInput").focus(),50)}
+function hideToken(){$("modal").style.display="none"}
+function formatDate(v){if(!v)return "Not yet recorded";try{return new Date(v).toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"})}catch{return String(v)}}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function addActivity(title,detail){const row=document.createElement("div");row.className="activity-row";const dot=document.createElement("span");dot.className="activity-dot";const body=document.createElement("div");const strong=document.createElement("strong");strong.textContent=title;body.appendChild(strong);body.appendChild(document.createElement("br"));body.appendChild(document.createTextNode(detail));row.append(dot,body);$("activity").prepend(row);while($("activity").children.length>5)$("activity").lastElementChild.remove()}
+function setConnection(label,ok){$("connection").textContent=label;$("connectionDot").className="dot "+(ok===true?"ok":ok===false?"bad":"");$("automationStatus").textContent=label}
+function filteredJobs(){const q=$("search").value.trim().toLowerCase();const wf=$("workFilter").value;const sf=Number($("scoreFilter").value);return (dashboard.jobs||[]).filter(j=>{const text=[j.title,j.company,j.location,j.description].join(" ").toLowerCase();if(q&&!text.includes(q))return false;if(Number(j.score||0)<sf)return false;const loc=String(j.location||"").toLowerCase();if(wf==="remote"&&!loc.includes("remote"))return false;if(wf==="hybrid"&&!loc.includes("hybrid"))return false;if(wf==="noida"&&!loc.includes("noida"))return false;if(wf==="gurgaon"&&!/gurgaon|gurugram/.test(loc))return false;return true})}
+function renderJobs(){const list=filteredJobs();$("jobCount").textContent=list.length+" jobs";if(!list.length){$("jobs").innerHTML='<div class="empty"><strong>No jobs match these filters</strong>Try clearing filters or run another scan when the cooldown has expired.</div>';return}const apps=dashboard.applications||[];$("jobs").innerHTML=list.slice(0,50).map(j=>{const tracked=apps.some(a=>a.jobId===j.id);const desc=String(j.description||"").replace(/\s+/g," ").slice(0,260);return '<article class="job"><div class="job-top"><div><h4>'+escapeHtml(j.title)+'</h4><div class="company">'+escapeHtml(j.company||"Company not listed")+' · '+escapeHtml(j.location||"Location not specified")+'</div></div><div class="score-wrap"><div class="score">'+Number(j.score||0)+'/99</div><div class="score-label">match score</div></div></div><div class="meta"><span class="tag">'+escapeHtml(j.source||"Job source")+'</span><span class="tag">'+escapeHtml(j.posted?formatDate(j.posted):"Date unavailable")+'</span>'+(Number(j.score||0)>=55?'<span class="tag match">Relevant match</span>':'')+(tracked?'<span class="tag">Tracked</span>':'')+'</div><p class="desc">'+escapeHtml(desc)+(desc.length>=260?"…":"")+'</p><div class="job-actions"><a class="btn primary small" href="'+escapeHtml(j.url||"#")+'" target="_blank" rel="noopener noreferrer">View job ↗</a>'+(tracked?'<button class="btn small" type="button" disabled>Already tracked</button>':'<button class="btn small track-btn" type="button" data-id="'+escapeHtml(j.id)+'">Track application</button>')+'</div></article>'}).join("");document.querySelectorAll(".track-btn").forEach(b=>b.addEventListener("click",()=>trackApplication(b.dataset.id)))}
+function renderApplications(){const apps=dashboard.applications||[];$("applicationCount").textContent=apps.length+" tracked";if(!apps.length){$("applications").innerHTML='<div class="empty"><strong>No tracked applications yet</strong>Use “Track application” on a job to add it here. Tracking does not submit the application.</div>';return}const statuses=["approved","applied","assessment","interview","offer","rejected","withdrawn"];$("applications").innerHTML=apps.slice().reverse().map(a=>'<article class="application"><div><h4>'+escapeHtml(a.title)+'</h4><p>'+escapeHtml(a.company)+' · Added '+escapeHtml(formatDate(a.createdAt))+'</p><p><a href="'+escapeHtml(a.url||"#")+'" target="_blank" rel="noopener noreferrer" style="color:var(--brand);font-weight:700">Open job ↗</a></p></div><label><span class="sr-only">Application status for '+escapeHtml(a.title)+'</span><select class="select status-select" data-id="'+escapeHtml(a.id)+'">'+statuses.map(s=>'<option value="'+s+'" '+(a.status===s?"selected":"")+'>'+s.charAt(0).toUpperCase()+s.slice(1)+'</option>').join("")+'</select></label></article>').join("");document.querySelectorAll(".status-select").forEach(s=>s.addEventListener("change",()=>updateStatus(s.dataset.id,s.value,s)))}
+async function loadDashboard(){if(!getToken()){setConnection("Token required",null);showToken();return}try{setConnection("Connecting…",null);const r=await fetch(API+"/dashboard",{headers:headers()});if(r.status===401){sessionStorage.removeItem(tokenKey);setConnection("Token rejected",false);showToken();return}if(!r.ok)throw new Error("Dashboard request failed ("+r.status+")");dashboard=await r.json();const s=dashboard.stats||{};$("matches").textContent=s.matches??0;$("shortlist").textContent=s.shortlisted??0;$("applied").textContent=s.applications??0;$("interviews").textContent=s.interviews??0;$("lastScan").textContent=formatDate(dashboard.lastScan);setConnection("Connected",true);renderJobs();renderApplications();addActivity("Dashboard refreshed",(dashboard.jobs||[]).length+" saved jobs loaded.");}catch(e){setConnection("Connection error",false);toast(e.message)}}
+async function scan(){if(!getToken()){showToken();return}const b=$("scanBtn");b.disabled=true;b.textContent="Scanning…";$("scanMessage").textContent="Fetching the latest listings and scoring matches…";try{const r=await fetch(API+"/scan",{method:"POST",headers:headers()});const data=await r.json().catch(()=>({}));if(r.status===401){sessionStorage.removeItem(tokenKey);showToken();throw new Error("Admin token rejected. Connect again.")}if(r.status===429){const seconds=Number(data.retryAfterSeconds||0);const hours=Math.floor(seconds/3600);const mins=Math.ceil((seconds%3600)/60);throw new Error(data.error||("Scan cooldown active. Try again in "+hours+"h "+mins+"m."))}if(!r.ok)throw new Error(data.error||"Scan failed ("+r.status+")");$("scanMessage").textContent="Scan completed. "+(data.added??0)+" new jobs added; "+(data.total??0)+" saved in total.";addActivity("Scan completed",(data.added??0)+" new jobs added.");await loadDashboard()}catch(e){$("scanMessage").textContent=e.message;toast(e.message)}finally{b.disabled=false;b.textContent="Run job scan"}}
+async function trackApplication(jobId){try{const r=await fetch(API+"/applications",{method:"POST",headers:headers(),body:JSON.stringify({jobId})});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||"Could not track application");if(data.message==="Already tracked"){toast("This job is already tracked")}else{toast("Application tracking entry saved. You still need to submit on the employer's site.");if(data.url)window.open(data.url,"_blank","noopener,noreferrer")}addActivity("Application tracked","Saved a role to your pipeline; no application was submitted.");await loadDashboard()}catch(e){toast(e.message)}}
+async function updateStatus(id,status,control){control.disabled=true;try{const r=await fetch(API+"/applications/"+encodeURIComponent(id)+"/status",{method:"POST",headers:headers(),body:JSON.stringify({status})});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||"Could not update status");const app=dashboard.applications.find(a=>a.id===id);if(app)app.status=status;addActivity("Application status updated","Status changed to "+status+".");await loadDashboard();toast("Application status updated")}catch(e){toast(e.message);await loadDashboard()}finally{control.disabled=false}}
+$("scanBtn").addEventListener("click",scan);$("refreshBtn").addEventListener("click",loadDashboard);$("tokenBtn").addEventListener("click",showToken);$("logoutBtn").addEventListener("click",()=>{sessionStorage.removeItem(tokenKey);dashboard={jobs:[],applications:[]};setConnection("Locked",null);$("jobs").innerHTML='<div class="empty"><strong>Workspace locked</strong>Connect again to load saved data.</div>';showToken()});$("saveToken").addEventListener("click",()=>{const v=$("tokenInput").value.trim();if(!v){toast("Enter your admin token first");return}sessionStorage.setItem(tokenKey,v);hideToken();loadDashboard()});$("closeModal").addEventListener("click",hideToken);$("tokenInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("saveToken").click()});$("modal").addEventListener("click",e=>{if(e.target===$("modal"))hideToken()});$("search").addEventListener("input",renderJobs);$("workFilter").addEventListener("change",renderJobs);$("scoreFilter").addEventListener("change",renderJobs);$("clearFilters").addEventListener("click",()=>{$("search").value="";$("workFilter").value="all";$("scoreFilter").value="0";renderJobs()});document.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("[data-scroll]").forEach(x=>x.classList.toggle("active",x===b));document.getElementById(b.dataset.scroll).scrollIntoView({behavior:"smooth",block:"start"})}));loadDashboard();
 </script>
 </body>
 </html>
