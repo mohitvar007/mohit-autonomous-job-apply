@@ -130,23 +130,27 @@ function auth(req, res, next) {
 }
 
 function score(job) {
+  const title = String(job.title || '').toLowerCase();
   const text = (
-    job.title + ' ' + job.description + ' ' +
+    title + ' ' + job.description + ' ' +
     job.company + ' ' + job.location
   ).toLowerCase();
 
   let result = 0;
 
+  // Prioritise the candidate's actual .NET/C# stack rather than generic
+  // mentions of "developer" or "full stack" in unrelated job descriptions.
+  if (/\.net|dotnet|c#|asp\.net/.test(title)) result += 32;
+  if (/backend|back-end|back end/.test(title)) result += 16;
+  if (/software engineer|software developer/.test(title)) result += 8;
+  if (/full[ -]?stack/.test(title)) result += 5;
+
   for (const skill of profile.skills) {
-    if (text.includes(skill.toLowerCase())) result += 8;
+    if (text.includes(skill.toLowerCase())) result += 5;
   }
 
-  for (const role of profile.roles) {
-    if (text.includes(role.toLowerCase())) result += 7;
-  }
-
-  if (/remote/.test(text)) result += 12;
-  if (/noida|gurgaon|gurugram/.test(text)) result += 10;
+  if (/remote/.test(String(job.location || '').toLowerCase())) result += 4;
+  if (/noida|gurgaon|gurugram/.test(String(job.location || '').toLowerCase())) result += 12;
 
   for (const excluded of profile.exclude) {
     if (text.includes(excluded)) result -= 30;
