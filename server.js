@@ -236,30 +236,42 @@ async function fetchRemotiveJobs() {
 
 async function fetchSerpApiJobs() {
   if (!process.env.SERPAPI_API_KEY) return [];
-  const params = new URLSearchParams({
-    engine: 'google_jobs',
-    q: '.NET developer C# ASP.NET Core',
-    location: 'India',
-    hl: 'en',
-    gl: 'in',
-    api_key: process.env.SERPAPI_API_KEY
-  });
-  const data = await fetchJson('https://serpapi.com/search.json?' + params, 'Google Jobs (SerpApi)');
-  return (data.jobs_results || []).flatMap((job, index) => {
-    const apply = Array.isArray(job.apply_options) ? job.apply_options.find(option => option.link)?.link : '';
-    const url = apply || job.share_link;
-    const via = job.via ? String(job.via).replace(/^via\s+/i, '') : 'Google Jobs';
-    const normalized = normalizeJob({
-      id: 'googlejobs-' + (job.job_id || crypto.createHash('sha1').update([job.title, job.company_name, job.location, url].join('|')).digest('hex')),
-      title: job.title,
-      company: job.company_name,
-      location: job.location,
-      description: job.description,
-      url,
-      source: 'Google Jobs · ' + via,
-      posted: job.detected_extensions?.posted_at || null
+  const searches = [
+    { query: '.NET developer C# ASP.NET Core', location: 'Noida, Uttar Pradesh, India' },
+    { query: '.NET developer C# ASP.NET Core', location: 'Gurugram, Haryana, India' },
+    { query: '.NET developer C# ASP.NET Core remote', location: 'India' }
+  ];
+  const results = await Promise.allSettled(searches.map(async search => {
+    const params = new URLSearchParams({
+      engine: 'google_jobs',
+      q: search.query,
+      location: search.location,
+      hl: 'en',
+      gl: 'in',
+      api_key: process.env.SERPAPI_API_KEY
     });
-    return normalized ? [normalized] : [];
+    const data = await fetchJson('https://serpapi.com/search.json?' + params, 'Google Jobs (SerpApi)');
+    return (data.jobs_results || []).flatMap(job => {
+      const apply = Array.isArray(job.apply_options) ? job.apply_options.find(option => option.link)?.link : '';
+      const url = apply || job.share_link;
+      const via = job.via ? String(job.via).replace(/^via\s+/i, '') : 'Google Jobs';
+      const normalized = normalizeJob({
+        id: 'googlejobs-' + (job.job_id || crypto.createHash('sha1').update([job.title, job.company_name, job.location, url].join('|')).digest('hex')),
+        title: job.title,
+        company: job.company_name,
+        location: job.location,
+        description: job.description,
+        url,
+        source: 'Google Jobs · ' + via,
+        posted: job.detected_extensions?.posted_at || null
+      });
+      return normalized ? [normalized] : [];
+    });
+  }));
+  return results.flatMap(result => {
+    if (result.status === 'fulfilled') return result.value;
+    console.warn('Google Jobs query failed:', result.reason?.message || result.reason);
+    return [];
   });
 }
 
@@ -291,16 +303,21 @@ async function fetchAdzunaJobs() {
 async function scan() {
   const db = await readDB();
   const incoming = await fetchJobs();
-  const seen = new Set(db.jobs.map(job => job.id));
+  const fingerprint = job => String(job.url || '').toLowerCase().split('?')[0]
+    || [job.title, job.company, job.location].map(value => String(value || '').toLowerCase().trim()).join('|');
+  const seenIds = new Set(db.jobs.map(job => job.id));
+  const seenFingerprints = new Set(db.jobs.map(fingerprint));
   let added = 0;
 
   for (const job of incoming) {
-    if (seen.has(job.id)) continue;
+    const key = fingerprint(job);
+    if (seenIds.has(job.id) || seenFingerprints.has(key)) continue;
 
     job.score = score(job);
     job.status = job.score >= 55 ? 'shortlisted' : 'new';
     db.jobs.push(job);
-    seen.add(job.id);
+    seenIds.add(job.id);
+    seenFingerprints.add(key);
     added++;
   }
 
