@@ -78,17 +78,29 @@ function emptyDB() {
   return { jobs: [], applications: [], lastScan: null };
 }
 
+function refreshScores(data) {
+  // Re-score previously stored jobs whenever the dashboard is loaded so
+  // improvements to matching logic also apply to existing listings.
+  for (const job of data.jobs || []) {
+    job.score = score(job);
+    if (job.status === 'shortlisted' || job.status === 'new') {
+      job.status = job.score >= 55 ? 'shortlisted' : 'new';
+    }
+  }
+  return data;
+}
+
 async function readDB() {
   if (pool) {
     await ensureDatabase();
     const result = await pool.query(
       'SELECT data FROM portal_state WHERE id = 1'
     );
-    return result.rows[0]?.data || emptyDB();
+    return refreshScores(result.rows[0]?.data || emptyDB());
   }
 
   try {
-    return JSON.parse(await fs.readFile(DB, 'utf8'));
+    return refreshScores(JSON.parse(await fs.readFile(DB, 'utf8')));
   } catch {
     return emptyDB();
   }
