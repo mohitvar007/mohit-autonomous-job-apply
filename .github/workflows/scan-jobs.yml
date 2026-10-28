@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: hosted-job-scan
+  cancel-in-progress: false
+
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -22,13 +26,47 @@ jobs:
             echo "Set PORTAL_URL and PORTAL_ADMIN_TOKEN in repository Actions secrets."
             exit 1
           fi
+          case "$PORTAL_URL" in
+            https://*) ;;
+            *) echo "PORTAL_URL must use HTTPS."; exit 1 ;;
+          esac
+
       - name: Trigger hosted portal scan
         env:
           PORTAL_URL: ${{ secrets.PORTAL_URL }}
           PORTAL_ADMIN_TOKEN: ${{ secrets.PORTAL_ADMIN_TOKEN }}
         run: |
-          curl --fail-with-body --silent --show-error \
+          set +e
+          response_file="$(mktemp)"
+          http_code="$(curl --silent --show-error \
             --max-time 90 \
+            --output "$response_file" \
+            --write-out "%{http_code}" \
             -X POST "${PORTAL_URL%/}/api/scan" \
             -H "x-admin-token: ${PORTAL_ADMIN_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json")"
+          curl_exit=$?
+          set -e
+
+          if [ "$curl_exit" -ne 0 ]; then
+            echo "Could not reach the hosted portal (curl exit $curl_exit)."
+            cat "$response_file" 2>/dev/null || true
+            exit "$curl_exit"
+          fi
+
+          case "$http_code" in
+            2*)
+              echo "Scan completed successfully:"
+              cat "$response_file"
+              ;;
+            429)
+              echo "Scan skipped: the portal cooldown is still active. This is expected when a scan ran recently."
+              cat "$response_file"
+              ;;
+            *)
+              echo "Portal scan failed with HTTP $http_code:"
+              cat "$response_file"
+              exit 1
+              ;;
+          esac
+          rm -f "$response_file"
