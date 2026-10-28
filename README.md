@@ -5,6 +5,8 @@ A private, supervised job-discovery and application-tracking workspace built wit
 ## What it does
 
 - Discovers remote software roles from the Remotive public jobs feed.
+- Optionally aggregates Google Jobs results through SerpApi and India listings through Adzuna when API credentials are configured.
+- Provides one-click search links to LinkedIn, Naukri, Indeed, and Google Jobs; these links are not represented as direct data integrations.
 - Scores listings against a configured .NET/C# backend profile using transparent keyword heuristics.
 - Deduplicates listings and persists the job list and application tracker in PostgreSQL when `DATABASE_URL` is configured.
 - Provides a dashboard for search, score and location filtering, review, and application status tracking.
@@ -16,7 +18,8 @@ A private, supervised job-discovery and application-tracking workspace built wit
 
 - **No automatic final submissions.** Tracking a role saves it to the portal and opens the employer's page; you complete and submit the application yourself.
 - **Heuristic scoring, not an AI model.** Scores are keyword-based indicators, not probabilities or guarantees of fit.
-- **Source coverage is limited.** The current scanner uses Remotive's public remote-job feed. It cannot guarantee coverage of hybrid or office jobs in Noida/Gurgaon.
+- **Source coverage depends on configuration.** Remotive is enabled by default. Google Jobs aggregation requires `SERPAPI_API_KEY`; Adzuna India requires `ADZUNA_APP_ID` and `ADZUNA_APP_KEY`. Without these secrets, the portal only fetches from Remotive. These aggregators do not guarantee every LinkedIn, Naukri, or Indeed listing.
+- **Direct job-board integrations are not enabled.** LinkedIn and Indeed APIs are permissioned/partner-oriented rather than general public job-search APIs. The portal therefore provides direct search shortcuts instead of pretending to fetch those sites directly. See [LinkedIn API access](https://www.linkedin.com/help/linkedin/answer/a526048) and [Indeed Partner Docs](https://docs.indeed.com/).
 - **Salary is a preference, not a verified hard filter.** Verify compensation, location, seniority, and eligibility on the employer's listing.
 - **Feed limits matter.** The workflow runs twice daily, while the portal enforces a configurable cooldown. A scheduled run that receives HTTP 429 is reported as a skipped scan instead of a misleading workflow failure.
 - **Hosting and database tiers have provider-specific limits.** Check the current Render and database-provider plans, retention, backups, and usage limits. Do not assume a free tier is permanent.
@@ -32,6 +35,8 @@ A private, supervised job-discovery and application-tracking workspace built wit
 - `DATABASE_URL`: PostgreSQL connection string for persistent hosted storage.
 - `MIN_SCAN_INTERVAL_HOURS`: normally `12`.
 - `ENABLE_IN_PROCESS_CRON`: `false` when GitHub Actions owns the schedule, to avoid duplicate schedulers.
+- `SERPAPI_API_KEY`: optional key for Google Jobs aggregation.
+- `ADZUNA_APP_ID` and `ADZUNA_APP_KEY`: optional Adzuna India API credentials.
 
 After deployment, open `/healthz`. Expected output when PostgreSQL is configured:
 
