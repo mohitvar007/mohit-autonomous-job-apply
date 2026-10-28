@@ -1,0 +1,34 @@
+name: Scheduled job scan
+
+on:
+  schedule:
+    - cron: "0 8,20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate configuration
+        env:
+          PORTAL_URL: ${{ secrets.PORTAL_URL }}
+          PORTAL_ADMIN_TOKEN: ${{ secrets.PORTAL_ADMIN_TOKEN }}
+        run: |
+          if [ -z "$PORTAL_URL" ] || [ -z "$PORTAL_ADMIN_TOKEN" ]; then
+            echo "Set PORTAL_URL and PORTAL_ADMIN_TOKEN in repository Actions secrets."
+            exit 1
+          fi
+      - name: Trigger hosted portal scan
+        env:
+          PORTAL_URL: ${{ secrets.PORTAL_URL }}
+          PORTAL_ADMIN_TOKEN: ${{ secrets.PORTAL_ADMIN_TOKEN }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --max-time 90 \
+            -X POST "${PORTAL_URL%/}/api/scan" \
+            -H "x-admin-token: ${PORTAL_ADMIN_TOKEN}" \
+            -H "Content-Type: application/json"
