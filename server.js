@@ -238,7 +238,7 @@ app.get('/api/dashboard', auth, async (req, res) => {
 app.post('/api/scan', auth, async (req, res) => {
   try {
     const db = await readDB();
-    const minIntervalHours = Number(process.env.MIN_SCAN_INTERVAL_HOURS || 6);
+    const minIntervalHours = Number(process.env.MIN_SCAN_INTERVAL_HOURS || 12);
     if (db.lastScan) {
       const elapsedMs = Date.now() - new Date(db.lastScan).getTime();
       const minimumMs = minIntervalHours * 60 * 60 * 1000;
@@ -321,14 +321,19 @@ app.post('/api/applications/:id/status', auth, async (req, res) => {
   }
 });
 
-const schedule = process.env.SCAN_CRON || '0 8,20 * * *';
-cron.schedule(schedule, () => {
-  scan().then(result => {
-    console.log('Scheduled scan complete:', result);
-  }).catch(error => {
-    console.error('Scheduled scan failed:', error.message);
+// Hosted free-tier scheduling is handled by GitHub Actions so scans can run
+// even after Render spins down the web service. Enable this only for local
+// or always-on hosting to avoid duplicate scheduled requests.
+if (process.env.ENABLE_IN_PROCESS_CRON === 'true') {
+  const schedule = process.env.SCAN_CRON || '0 8,20 * * *';
+  cron.schedule(schedule, () => {
+    scan().then(result => {
+      console.log('Scheduled scan complete:', result);
+    }).catch(error => {
+      console.error('Scheduled scan failed:', error.message);
+    });
   });
-});
+}
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Mohit portal running on port ${PORT}`);
