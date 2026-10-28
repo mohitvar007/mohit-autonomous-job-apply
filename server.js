@@ -75,7 +75,7 @@ async function ensureDatabase() {
 }
 
 function emptyDB() {
-  return { jobs: [], applications: [], lastScan: null };
+  return { jobs: [], applications: [], lastScan: null, lastScanSources: [] };
 }
 
 function refreshScores(data) {
@@ -172,32 +172,120 @@ function score(job) {
 }
 
 async function fetchJobs() {
-  // One request per scan. Remotive advises fetching its public feed only a
-  // few times daily; local scoring filters the returned remote roles.
-  const url = 'https://remotive.com/api/remote-jobs';
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'MohitJobPortal/1.1 (personal job search)' },
-    signal: AbortSignal.timeout(15000)
-  });
-
-  if (!response.ok) {
-    throw new Error('Job source returned HTTP ' + response.status);
+  const results = await Promise.allSettled([
+    fetchRemotiveJobs(),
+    fetchSerpApiJobs(),
+    fetchAdzunaJobs()
+  ]);
+  const jobs = [];
+  const sourceErrors = [];
+  for (const result of results) {
+    if (result.status === 'fulfilled') jobs.push(...result.value);
+    else {
+      sourceErrors.push(result.reason?.message || 'Unknown source error');
+      console.warn('Job source unavailable:', result.reason?.message || result.reason);
+    }
   }
+  if (!jobs.length) {
+    throw new Error('All job sources failed. Check configured source credentials and provider status.');
+  }
+  console.log('Job discovery sources:', JSON.stringify({
+    fetched: jobs.length,
+    sources: [...new Set(jobs.map(job => job.source))],
+    failedSources: sourceErrors.length
+  }));
+  return jobs;
+}
 
-  const data = await response.json();
-  return (data.jobs || []).map(job => ({
+function normalizeJob({ id, title, company, location, description, url, source, posted }) {
+  if (!title || !url) return null;
+  return {
+    id: String(id),
+    title: String(title).trim(),
+    company: String(company || 'Company not listed').trim(),
+    location: String(location || 'Location not specified').trim(),
+    description: String(description || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').slice(0, 3000),
+    url: String(url),
+    source: String(source || 'Job board'),
+    posted: posted || null
+  };
+}
+
+async function fetchJson(url, label) {
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'CareerDesk/2.0 (personal job search)' },
+    signal: AbortSignal.timeout(18000)
+  });
+  if (!response.ok) throw new Error(label + ' returned HTTP ' + response.status);
+  return response.json();
+}
+
+async function fetchRemotiveJobs() {
+  const data = await fetchJson('https://remotive.com/api/remote-jobs', 'Remotive');
+  return (data.jobs || []).map(job => normalizeJob({
     id: 'remotive-' + job.id,
-    title: job.title || '',
-    company: job.company_name || '',
+    title: job.title,
+    company: job.company_name,
     location: job.candidate_required_location || 'Remote',
-    description: (job.description || '')
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .slice(0, 3000),
+    description: job.description,
     url: job.url,
     source: 'Remotive',
     posted: job.publication_date
-  }));
+  })).filter(Boolean);
+}
+
+async function fetchSerpApiJobs() {
+  if (!process.env.SERPAPI_API_KEY) return [];
+  const params = new URLSearchParams({
+    engine: 'google_jobs',
+    q: '.NET developer C# ASP.NET Core',
+    location: 'India',
+    hl: 'en',
+    gl: 'in',
+    api_key: process.env.SERPAPI_API_KEY
+  });
+  const data = await fetchJson('https://serpapi.com/search.json?' + params, 'Google Jobs (SerpApi)');
+  return (data.jobs_results || []).flatMap((job, index) => {
+    const apply = Array.isArray(job.apply_options) ? job.apply_options.find(option => option.link)?.link : '';
+    const url = apply || job.share_link;
+    const via = job.via ? String(job.via).replace(/^via\s+/i, '') : 'Google Jobs';
+    const normalized = normalizeJob({
+      id: 'googlejobs-' + (job.job_id || crypto.createHash('sha1').update([job.title, job.company_name, job.location, url].join('|')).digest('hex')),
+      title: job.title,
+      company: job.company_name,
+      location: job.location,
+      description: job.description,
+      url,
+      source: 'Google Jobs · ' + via,
+      posted: job.detected_extensions?.posted_at || null
+    });
+    return normalized ? [normalized] : [];
+  });
+}
+
+async function fetchAdzunaJobs() {
+  const appId = process.env.ADZUNA_APP_ID;
+  const appKey = process.env.ADZUNA_APP_KEY;
+  if (!appId || !appKey) return [];
+  const params = new URLSearchParams({
+    app_id: appId,
+    app_key: appKey,
+    results_per_page: '50',
+    what: '.NET C# ASP.NET Core developer',
+    where: 'India',
+    'content-type': 'application/json'
+  });
+  const data = await fetchJson('https://api.adzuna.com/v1/api/jobs/in/search/1?' + params, 'Adzuna India');
+  return (data.results || []).map(job => normalizeJob({
+    id: 'adzuna-' + job.id,
+    title: job.title,
+    company: job.company?.display_name,
+    location: job.location?.display_name,
+    description: job.description,
+    url: job.redirect_url,
+    source: 'Adzuna',
+    posted: job.created
+  })).filter(Boolean);
 }
 
 async function scan() {
@@ -219,9 +307,10 @@ async function scan() {
   db.jobs.sort((a, b) => b.score - a.score);
   db.jobs = db.jobs.slice(0, 1000);
   db.lastScan = new Date().toISOString();
+  db.lastScanSources = [...new Set(incoming.map(job => job.source))];
 
   await writeDB(db);
-  return { added, total: db.jobs.length, lastScan: db.lastScan };
+  return { added, total: db.jobs.length, lastScan: db.lastScan, sources: db.lastScanSources };
 }
 
 app.get('/api/profile', (req, res) => {
@@ -242,7 +331,13 @@ app.get('/api/dashboard', auth, async (req, res) => {
         ).length
       },
       lastScan: db.lastScan,
-      jobs: db.jobs.slice(0, 50),
+      sources: [...new Set((db.jobs || []).map(job => job.source).filter(Boolean))],
+      configuredSources: {
+        remotive: true,
+        googleJobs: Boolean(process.env.SERPAPI_API_KEY),
+        adzuna: Boolean(process.env.ADZUNA_APP_ID && process.env.ADZUNA_APP_KEY)
+      },
+      jobs: db.jobs.slice(0, 100),
       applications: db.applications
     });
   } catch (error) {
