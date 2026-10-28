@@ -125,7 +125,7 @@ a{color:inherit;text-decoration:none}
     <button data-scroll="profileSection">Profile</button>
     <button data-scroll="rulesSection">Guardrails</button>
   </nav>
-  <div class="side-note">Automatic server scan is configured for every 3 hours. On a free Render instance, inactivity can delay a scheduled request.</div>
+  <div class="side-note">Scheduled scans are planned twice daily after the GitHub Actions workflow is enabled on the main branch. Manual scans are rate-limited to once every 12 hours.</div>
 </aside>
 
 <main class="main">
@@ -143,7 +143,7 @@ a{color:inherit;text-decoration:none}
   <div class="panel hero-side">
     <div class="side-label">Automation status</div>
     <div class="side-value" id="automationStatus">Ready</div>
-    <div class="side-sub">Server scan cadence: every 3 hours</div>
+    <div class="side-sub">Scheduled scans: twice daily after workflow activation</div>
     <div class="progress"><span></span></div>
     <div class="side-sub" id="lastScan">Last scan: —</div>
   </div>
